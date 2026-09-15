@@ -109,7 +109,7 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 <script>
 (function () {
   'use strict';
-  var regFile = null, tplFile = null, outBlob = null;
+  var regFile = { file: null }, tplFile = { file: null }, outBlob = null;
   var OUT_NAME = '电瓶车文明劝导排班表(已填).xlsx';
 
   // ---------- 工具 ----------
@@ -332,16 +332,16 @@ https://github.com/nodeca/pako/blob/main/LICENSE
       if (e.dataTransfer.files.length) { holder.file = e.dataTransfer.files[0]; nameEl.textContent = e.dataTransfer.files[0].name; }
     });
   }
-  wireDrop('dropReg', 'regFile', 'regName', { file: null });
-  wireDrop('dropTpl', 'tplFile', 'tplName', { file: null });
+  wireDrop('dropReg', 'regFile', 'regName', regFile);
+  wireDrop('dropTpl', 'tplFile', 'tplName', tplFile);
 
   $('runBtn').addEventListener('click', function () {
     var maxShifts = parseInt($('maxShifts').value, 10) || 3;
-    if (!regFile) { alert('请先放入「报名表」文件'); return; }
-    if (!tplFile) { alert('请先放入「排班模板」文件'); return; }
+    if (!regFile.file) { alert('请先放入「报名表」文件'); return; }
+    if (!tplFile.file) { alert('请先放入「排班模板」文件'); return; }
     var btn = $('runBtn');
     btn.disabled = true; btn.textContent = '排班中…';
-    Promise.all([regFile.arrayBuffer(), tplFile.arrayBuffer()]).then(function (bufs) {
+    Promise.all([regFile.file.arrayBuffer(), tplFile.file.arrayBuffer()]).then(function (bufs) {
       var people = parseRegistration(bufs[0]);
       var slots = parseTemplate(bufs[1]);
       var res = assign(people, slots, maxShifts);
